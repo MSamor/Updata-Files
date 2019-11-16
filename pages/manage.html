@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>公告平台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .warp {
+      width: 80%;
+      /* height: 200px; */
+      font-size: 20px;
+    }
+    .btnmiddle {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .links {
+      cursor: pointer;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <h3 style="background-color: rgb(0, 0, 0);height: 80px; line-height: 80px; color: white;font-size: 25px;padding: 0 40px;">已存在文件夹：<span id="exist">132</span></h3>
+  <h3 style="background-color: rgb(255, 57, 57);height: 80px; line-height: 80px; font-size: 25px;padding: 0 40px;">
+    添加：<input id="inputFileName" type="text" style="height: 30px;" style="color: black!important;">
+    <input id="upFileName" class="btn btn-primary" type="button" value="生成">
+  </h3>
+  <div class="table-responsive warp">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <td>第n次作业</td>
+          <td>文件夹</td>
+          <td>已提交人员</td>
+          <td>提交人数</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
+<script>
+  $(function () {
+    var index = 1;
+    var name = '';
+    var perTotail = 0;
+    var html = '';
+    //添加文件夹
+    $('#upFileName').click(function(){
+      // console.log()
+      $.ajax({
+        url:'http://localhost:3000/api/fileFolder?folderName='+$('#inputFileName').val(),
+        success:function(){
+          location.reload();
+        }
+      })
+    })
+
+    $.ajax({
+      url: 'http://localhost:3000/api/getList',
+      success: function (res) {
+        //添加到头
+        $('#exist').text(res)
+
+        for (let i = 0; i < res.length; i++) {
+          html = `
+          <tr>
+          <td>${index}</td>
+          <td ><a id="${res[i]}" class="links">${res[i]}</a></td>
+          <td id=PerName>null</td>
+          <td id=totail>0</td>
+        </tr>
+          `
+          $('tbody').append(html)
+          index++;
+        }
+
+        $('.links').click(function () {
+          // console.log($(this).attr('id'))
+         window.location.href='http://localhost:3000/api/downloadFolder?folderName='+$(this).attr('id')
+          return false;
+        })
+
+        for (let i = 0; i < res.length; i++) {
+          $.ajax({
+            url: 'http://localhost:3000/api/getFilesList?fileName=' + res[i],
+            success: function (res0) {
+              console.log(res0)
+              for (let j = 0; j < res0.length; j++) {
+                name += res0[j] + ' ';
+                perTotail++
+              }
+              $('tr>#PerName').eq(i).text(name)
+              $('tr>#totail').eq(i).text(perTotail)
+              name = '';
+              perTotail = 0;
+            }
+          })
+        }
+
+      }
+    })
+
+
+  })
+</script>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+            color: rgb(255, 0, 128);
+        }
+        body{
+            background-color: rgb(224, 224, 224);
+            background-image: url('./img/bg.jpeg');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+        .box {
+            border: 1px solid rgb(202, 202, 202);
+            background-color: rgb(241, 241, 241);
+            opacity: .7;
+            padding: 20px 20px;
+            border-radius: 10px;
+            margin: 0 50px;
+        }
+    </style>
+    <title>作业提交平台</title>
+</head>
+
+<body>
+    <div class="box">
+        <div>每一次的作业文件请打包成一个压缩包并且文件名写自己的名字+作业编号</div><br>
+        <div>ღ( ´･ᴗ･` )比心</div>
+        <br>
+        <div>1.选择你要提交的文件 <br> 2.点击提交 <br>3.等待上传完成</div>
+        <br>
+        <br>
+        <form method="post" enctype="multipart/form-data" action="http://localhost:5000/upfiles">
+            <input type="file" name="test" /><br><br>
+            <input type="submit" name="test" value="提交">
+        </form>
+    </div>
+</body>
+<!-- 貌似 -->
+</html>

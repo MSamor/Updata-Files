@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>公告平台</title>
+  <style>
+    html,
+    body {
+      overflow: hidden;
+      height: 100%;
+      background-image: url('./img/bg.jpeg');
+      background-size: 100% 100%;
+    }
+
+    .warp {
+      margin: 10px auto;
+      width: 500px;
+      font-size: 15px;
+    }
+
+    .width1190 {
+      background-color: rgb(236, 236, 236);
+      padding: 30px 10px;
+      border-radius: 10px;
+      margin: 0 auto;
+      width: 90%;
+      overflow-x: auto;
+    }
+
+    table {
+      cursor: pointer;
+    }
+
+    .btnmiddle {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .showid_name {
+      height: 50px;
+      line-height: 50px;
+      background-color: rgb(37, 37, 37);
+      color: white;
+      padding-left: 20px;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="mark" style="background-color: antiquewhite; font-size: 30px;display:none; top: 0;width: 100%;height: 100%;z-index: 100; position:fixed">
+    上传中…………
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="showid_name"></div>
+      <div class="width1190">
+        <!-- Button trigger modal -->
+        <div class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+          上传新文件
+        </div>
+        <div>-----------------------------------</div>
+        <!-- 用模态窗上传文件 -->
+        <div class="table-responsive warp">
+
+          <!-- Modal -->
+          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="myModalLabel">提交</h4>
+                </div>
+                <div class="modal-body">
+                  <div class="box">
+                    <div>1、每个文件夹请打包成一个压缩包并且文件名写自己的名字</div>
+                    <div>2、单文件直接上传可以不用打包但要在文件名上写自己的名字</div><br>
+                    <div>ღ( ´･ᴗ･` )</div>
+                    <br>
+                    <div>1.选择你的文件提交 <br> 2.请不要重复提交相同的文件 <br>3.上传成功会出现在下面的表格中</div>
+                    <br />
+                    <form id="upfile" method="POST" enctype="multipart/form-data"
+                      action="http://localhost:3000/api/upfiles">
+                      <br />
+                      请选择文件模块：
+                      <select>
+
+                      </select>
+                      <br />
+                      备注：　　　　　
+                      <input autocomplete="off" type="text" name="bz" value="备注" />
+                      <br />
+                      请选择文件：　
+                      <input type="file" id="upfileSpace" name="test" /><br><br>
+                    </form>
+
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <div class="btn btn-default" data-dismiss="modal">关闭</div>
+                  <div class="btn btn-primary" data-dismiss="modal" id="submit">确认提交</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-hover table-responsive">
+          <thead>
+            <tr>
+              <td>#</td>
+              <td>文件名称</td>
+              <td>时间</td>
+              <td>上传分类</td>
+              <td>备注/作业</td>
+              <td>操作</td>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+</body>
+
+<script>
+  $(function () {
+    var data = getUrlParam('id')
+    console.log(data)
+    if (data == null) {
+      window.location.href = './logup.html'
+    }
+
+
+    $.ajax({
+      url: 'http://localhost:3000/api/getinfo?id=' + data,
+      success: function (res1) {
+        $('.showid_name').text('ID：' + res1.id + ' ' + '你好！' + res1.name)
+        var html2 =
+          `你的ID号：　 　　<input type="text" name="id" value="${res1.id}" readonly="readonly"/>`
+        $('#upfile').prepend(html2)
+      }
+    })
+    $.ajax({
+      url: 'http://localhost:3000/api/getList',
+      success: function (res) {
+        for (let i = 0; i < res.length; i++) {
+          var html3 =
+            `<option value="${res[i]}">${res[i]}</option>`
+          $('select').append(html3)
+        }
+      }
+    })
+
+    function ajaxGet() {
+      $.ajax({
+        url: 'http://localhost:3000/api/list?id=' + data,
+        success: function (res) {
+          console.log(res)
+          if (res != 'filed') {
+            var index = 1
+            for (let i = 0; i < res.length; i++) {
+              var html =
+                `
+              <tr>
+                <td>${i+1}</td>
+                <td>${res[i].filename}</td>
+                <td>${res[i].time}</td>
+                <td>${res[i].classify}</td>
+                <td>${res[i].Remarks}</td>
+                <td><span><a class="btnDel" id="${res[i].filename+'&fileName='+res[i].classify+'&id='+res[i].id}">删除</a></span></td>
+              </tr>`
+              $('tbody').append(html)
+            }
+
+
+            $('.btnDel').click(function () {
+              $('tbody').html('')
+              let temp = $(this).attr('id')
+              $.ajax({
+                url: 'http://localhost:3000/api/del?name=' + temp,
+                success: function (res) {
+                  console.log(res)
+                  ajaxGet()
+                }
+              })
+            })
+          }
+
+        }
+      })
+    }
+    // })
+    // }
+
+    ajaxGet()
+
+    function getUrlParam(name) {
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+      var r = window.location.search.substr(1).match(reg); //匹配目标参数
+      if (r != null) return unescape(r[2]);
+      return null; //返回参数值
+    }
+
+
+
+    $("#upfile").ajaxForm(function (data) {
+      console.log(data)
+    });
+
+    $('#submit').click(function () {
+      if ($('#upfileSpace').val()) {
+        $('.mark').css('display','block')
+        $('tbody').html('')
+        var temp = $("select option:selected").val()
+        console.log(temp)
+        $('#upfile').ajaxSubmit({
+          data: {
+            selected: temp
+          },
+          success: function () {
+            $('.mark').css('display', 'none')
+            $('#upfileSpace').val("")
+            ajaxGet()
+          }
+        })
+      } else {
+        alert("不能为空")
+      }
+    })
+
+  })
+</script>
+
+</html>
